@@ -1,21 +1,45 @@
+
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import ProductCard from '../common/ProductCard';
 import menuData from '../../data/menuData';
+import { useNavigation } from '@react-navigation/native';
 
 const MenuScreen = () => {
+
+  const navigation = useNavigation();
+
+  const handleProductPress = (product) => {
+    navigation.navigate('ProductDetail', { product });
+  };
+
+
   return (
-    <View>
-      {menuData.map((menuItem) => (
-        <View key={menuItem.id}>
-          <Image source={menuItem.image} />
-          <Text>Name: {menuItem.name}</Text>
-          <Text>Description: {menuItem.description}</Text>
-          <Text>Price: ${menuItem.price}</Text>
-          {/* Hiển thị các thuộc tính khác của món ăn */}
-        </View>
-      ))}
+    <View style={styles.container}>
+      <FlatList
+        data={menuData}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleProductPress(item)}>
+            <ProductCard product={item} />
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.productList}
+      />
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  productList: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+});
+
 export default MenuScreen;
+

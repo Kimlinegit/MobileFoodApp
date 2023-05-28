@@ -11,6 +11,8 @@ import AccountScreen from '../components/screens/AccountScreen';
 import LoginScreen from '../components/screens/LoginScreen';
 import RegisterScreen from '../components/screens/RegisterScreen';
 import AuthNavigator from './AuthNavigator';
+import ProductDetailScreen from '../components/screens/ProductDetailScreen';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,6 +29,7 @@ const MenuStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Menu" component={MenuScreen} />
+      <Stack.Screen name="ProductDetail" component={ProductDetailScreen}/>
     </Stack.Navigator>
   );
 };
@@ -80,6 +83,7 @@ const AccountStack = () => {
     </Stack.Navigator>
   );
 };
+
 
 
 

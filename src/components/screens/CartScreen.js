@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import cartData from '../../data/cartData';
+import ProductData from '../../data/productData';
 
 const CartScreen = () => {
   return (
