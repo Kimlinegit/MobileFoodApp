@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
     const navigation = useNavigation();
 
     const handleProductPress = () => {
-      navigation.navigate('ProductDetail', { product });
+      navigation.navigate('ProductDetailScreen', { product });
     };
 
     const renderRatingStars = () => {

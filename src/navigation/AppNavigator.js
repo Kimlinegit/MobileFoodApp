@@ -8,8 +8,6 @@ import MenuScreen from '../components/screens/MenuScreen';
 import CartScreen from '../components/screens/CartScreen';
 import NotificationScreen from '../components/screens/NotificationScreen';
 import AccountScreen from '../components/screens/AccountScreen';
-import LoginScreen from '../components/screens/LoginScreen';
-import RegisterScreen from '../components/screens/RegisterScreen';
 import AuthNavigator from './AuthNavigator';
 import ProductDetailScreen from '../components/screens/ProductDetailScreen';
 
@@ -20,7 +18,7 @@ const Stack = createStackNavigator();
 const HomeStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
     </Stack.Navigator>
   );
 };
@@ -28,8 +26,8 @@ const HomeStack = () => {
 const MenuStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Menu" component={MenuScreen} />
-      <Stack.Screen name="ProductDetail" component={ProductDetailScreen}/>
+      <Stack.Screen name="MenuScreen" component={MenuScreen} />
+      <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen}/>
     </Stack.Navigator>
   );
 };
@@ -37,7 +35,7 @@ const MenuStack = () => {
 const CartStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Cart" component={CartScreen} />
+      <Stack.Screen name="CartScreen" component={CartScreen} />
     </Stack.Navigator>
   );
 };
@@ -45,47 +43,18 @@ const CartStack = () => {
 const NotificationStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Notification" component={NotificationScreen} />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
     </Stack.Navigator>
   );
 };
-
-const LoginStack = () =>{
-    return (
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={LoginScreen} />
-        </Stack.Navigator>
-    );
-}
-
-const RegisterStack = () =>{
-    return (
-        <Stack.Navigator>
-          <Stack.Screen name="Register" component={RegisterScreen} />
-        </Stack.Navigator>
-    );
-}
-
-const AuthStack = () => {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        {/* <LoginScreen/> */}
-        <Stack.Screen name="Register" component={RegisterScreen} />
-      </Stack.Navigator>
-    );
-  };
 
 const AccountStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Account" component={AccountScreen} />
+      <Stack.Screen name="AccountScreen" component={AccountScreen} />
     </Stack.Navigator>
   );
 };
-
-
-
 
 const AppNavigator = () => {
     const renderIcon = (focused, color, size, iconName) => {
@@ -116,10 +85,10 @@ const AppNavigator = () => {
                 return renderIcon(focused, color, size, iconName);
               },
             })}
-            tabBarOptions={{
-              activeTintColor: 'blue',
-              inactiveTintColor: 'gray',
-            }}
+            // tabBarOptions={{
+            //   activeTintColor: 'blue',
+            //   inactiveTintColor: 'gray',
+            // }}
           >
             <Tab.Screen name="Home" options={{ headerShown: false }} component={HomeStack} />
             <Tab.Screen name="Menu" options={{ headerShown: false }} component={MenuStack} />

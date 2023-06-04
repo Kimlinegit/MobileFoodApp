@@ -10,7 +10,7 @@ const MenuScreen = () => {
   const navigation = useNavigation();
 
   const handleProductPress = (product) => {
-    navigation.navigate('ProductDetail', { product });
+    navigation.navigate('ProductDetailScreen', { product });
   };
 
 
