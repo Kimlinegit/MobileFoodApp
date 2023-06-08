@@ -1,12 +1,14 @@
 
 import React from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import ProductCard from '../common/ProductCard';
 import { useNavigation } from '@react-navigation/native';
 import axiosInstance from "../../config/axiosConfig"
 
 const MenuScreen = () => {
+
   const [menuData, setMenuData]=React.useState()
+  const [loading, setLoading] =React.useState(false)
 
   const navigation = useNavigation();
 
@@ -14,11 +16,22 @@ const MenuScreen = () => {
     navigation.navigate('ProductDetailScreen', { product });
   };
 
-React.useEffect(()=>{
+  React.useEffect(()=>{
+    setLoading(true)
     axiosInstance.get("/product").then((res)=>{
       setMenuData(res.data)
     })
-}, [])
+  }, [])
+
+  React.useEffect(()=>{
+    if(!menuData) return
+    setLoading(false)
+  }, [menuData])
+
+    if(loading){
+      return <ActivityIndicator size="large" />
+    }
+
   return (
     <View style={styles.container}>
       <FlatList

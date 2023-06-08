@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axiosInstance from '../../config/axiosConfig';
 
@@ -7,12 +7,19 @@ const ProductDetailScreen = ({ route }) => {
   const { id } = route.params;
 
   const [product, setProduct] = React.useState()
+  const [loading, setLoading] =React.useState(false)
 
   React.useEffect(()=>{
+    setLoading(true)
     axiosInstance.get(`product/${id}`).then((res)=>{
       setProduct(res.data)
     })
   }, [])
+
+  React.useEffect(()=>{
+    if(!product) return
+    setLoading(false)
+  }, [product])
 
   const renderRating = (ratingResponse) => {
     let ratingSum= 0
@@ -49,9 +56,11 @@ const ProductDetailScreen = ({ route }) => {
     })
   };
 
-  if(!product) {
-    return <View></View>
+  if(loading){
+    return <ActivityIndicator size="large" />
   }
+  if(!product) return <View></View>
+  
   return (
     <View style={styles.container}>
       <Image source={{
