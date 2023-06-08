@@ -10,6 +10,8 @@ import NotificationScreen from '../components/screens/NotificationScreen';
 import AccountScreen from '../components/screens/AccountScreen';
 import AuthNavigator from './AuthNavigator';
 import ProductDetailScreen from '../components/screens/ProductDetailScreen';
+import LoginScreen from '../components/screens/LoginScreen';
+import RegisterScreen from '../components/screens/RegisterScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -48,10 +50,21 @@ const NotificationStack = () => {
   );
 };
 
+
+// const AccountStack = () => {
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen name="AccountScreen" component={AccountScreen} />
+//     </Stack.Navigator>
+//   );
+// };
+
 const AccountStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="AccountScreen" component={AccountScreen} />
+      <Stack.Screen name="AccountScreen" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
   );
 };
