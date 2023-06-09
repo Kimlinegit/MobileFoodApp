@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 const OrderScreen = () => {
+  const navigation = useNavigation();
   const [address, setAddress] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
@@ -9,6 +11,7 @@ const OrderScreen = () => {
 
   const handlePlaceOrder = () => {
     // Xử lý đặt hàng và thanh toán ở đây
+    navigation.navigate("OrderHistoryScreen")
   };
 
   return (

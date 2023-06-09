@@ -9,6 +9,7 @@ import CartScreen from '../components/screens/CartScreen';
 import OrderScreen from '../components/screens/OrderScreen';
 import NotificationScreen from '../components/screens/NotificationScreen';
 import AccountScreen from '../components/screens/AccountScreen';
+import OrderHistoryScreen from '../components/screens/OrderHistoryScreen';
 import CommentScreen from '../components/screens/CommentScreen';
 import AuthNavigator from './AuthNavigator';
 import ProductDetailScreen from '../components/screens/ProductDetailScreen';
@@ -42,6 +43,7 @@ const CartStack = () => {
     <Stack.Navigator>
       <Stack.Screen name="CartScreen" component={CartScreen} />
       <Stack.Screen name="OrderScreen" component={OrderScreen} />
+      <Stack.Screen name="OrderHistoryScreen" component={OrderHistoryScreen} />
     </Stack.Navigator>
   );
 };
@@ -66,9 +68,9 @@ const NotificationStack = () => {
 const AccountStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="AccountScreen" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="Account" component={AccountScreen} />
     </Stack.Navigator>
   );
 };

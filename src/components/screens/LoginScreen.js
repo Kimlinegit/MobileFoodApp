@@ -7,7 +7,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    navigation.navigate('Home');
+    navigation.navigate('Account');
   };
 
   const handleRegister = () => {
