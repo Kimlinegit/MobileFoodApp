@@ -1,13 +1,51 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import axiosInstance from '../../config/axiosConfig';
 
 const ProductDetailScreen = ({ route }) => {
   const { id } = route.params;
+  const navigation = useNavigation();
 
   const [product, setProduct] = React.useState()
   const [loading, setLoading] =React.useState(false)
+
+//----------------------------------fake Data------------------------------------------
+  const comments = [
+    {
+      content: "Hàng phê lắm Shop ơi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      rating: 5,
+      author: "Nguyễn Quốc Dũng"
+    },
+    {
+      content: "Hàng ngon lắm Shop ơi",
+      rating: 4.5,
+      author: "Huỳnh Tuấn Anh"
+    },
+    
+  ]
+
+  const renderRating1 = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      const iconName = i <= rating ? 'star' : 'star-outline';
+      const starColor = i <= rating ? 'gold' : 'gray';
+      stars.push(
+        <Ionicons
+          key={i}
+          name={iconName}
+          size={20}
+          color={starColor}
+          style={{ marginRight: 5 }}
+        />
+      );
+    }
+
+    return stars;
+  };
+
+//-----------------------------------------------------------------------------------
 
   React.useEffect(()=>{
     setLoading(true)
@@ -56,30 +94,71 @@ const ProductDetailScreen = ({ route }) => {
     })
   };
 
+  const handleComment = () => {
+    // Xử lý khi người dùng nhấp vào nút "Comment"
+    navigation.navigate('Comment', { 
+      productId: product._id,
+      productName: product.name,
+      productImage: product.image_url,
+      productPrice: product.price,
+    });
+  };
+
   if(loading){
     return <ActivityIndicator size="large" />
   }
   if(!product) return <View></View>
   
   return (
-    <View style={styles.container}>
-      <Image source={{
-        uri: product.image_url
-      }} style={styles.image} />
-      <Text style={styles.name}>{product.name}</Text>
-      <Text style={styles.description}>{product.description}</Text>
-      <Text style={styles.price}>{product.price}</Text>
-      <Text style={styles.quantity}>Category: {product.quantity}</Text>
-      <View style={styles.ratingContainer}>
-        <Text style={styles.ratingText}>rating:</Text>
-        {renderRating(product.rating)}
+    <ScrollView>
+      <View style={styles.container}>
+        <Image source={{
+          uri: product.image_url
+        }} style={styles.image} />
+        <Text style={styles.name}>{product.name}</Text>
+        <Text style={styles.description}>{product.description}</Text>
+        <Text style={styles.price}>{product.price}</Text>
+        <Text style={styles.quantity}>Category: {product.quantity}</Text>
+        <View style={styles.ratingContainer}>
+          <Text style={styles.ratingText}>rating:</Text>
+          {renderRating(product.rating)}
+        </View>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddToCart}>
+          <Text style={styles.addButtonLabel}>Add to cart</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
+          <Text style={styles.commentButtonLabel}>Comment</Text>
+        </TouchableOpacity>
+        <Text style={styles.commentTitle}>Comments:</Text>
+        {/* Hiển thị danh sách comment */}
+        {/* <FlatList
+          data={product.comments}
+          renderItem={({ item }) => (
+            <View style={styles.commentContainer}>
+              <Text style={styles.commentText}>{item.content}</Text>
+              <Text style={styles.commentAuthor}>By: {item.author}</Text>
+            </View>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.commentList}
+        /> */}
+        <FlatList
+          data={comments}
+          renderItem={({ item }) => (
+            <View style={styles.commentContainer}>
+              <Text style={styles.commentText}>{item.content}</Text>
+              <View style={styles.ratingContainer}>
+                <Text style={styles.ratingText}>Rating:</Text>
+                {renderRating1(item.rating)}
+              </View>
+              <Text style={styles.commentAuthor}>By: {item.author}</Text>
+            </View>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.commentList}
+        />
       </View>
-      {/* <Text style={styles.commentTitle}>Comment:</Text> */}
-      {/* Hiển thị danh sách comment */}
-      <TouchableOpacity style={styles.addButton} onPress={handleAddToCart}>
-        <Text style={styles.addButtonLabel}>Add to cart</Text>
-      </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -132,14 +211,43 @@ const styles = {
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
+    marginBottom: 10,
   },
   addButtonLabel: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  commentButton: {
+    backgroundColor: 'blue',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  commentButtonLabel: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  commentContainer: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 20
+  },
+  commentText: {
+    fontSize: 16,
+  },
+  commentAuthor: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginTop: 5,
+  },
+  commentList: {
+    width: '100%',
+  },
 };
 
 export default ProductDetailScreen;
-
-

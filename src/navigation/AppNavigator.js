@@ -6,8 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../components/screens/HomeScreen';
 import MenuScreen from '../components/screens/MenuScreen';
 import CartScreen from '../components/screens/CartScreen';
+import OrderScreen from '../components/screens/OrderScreen';
 import NotificationScreen from '../components/screens/NotificationScreen';
 import AccountScreen from '../components/screens/AccountScreen';
+import CommentScreen from '../components/screens/CommentScreen';
 import AuthNavigator from './AuthNavigator';
 import ProductDetailScreen from '../components/screens/ProductDetailScreen';
 import LoginScreen from '../components/screens/LoginScreen';
@@ -29,6 +31,7 @@ const MenuStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="MenuScreen" component={MenuScreen} />
+      <Stack.Screen name="Comment" component={CommentScreen} />
       <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen}/>
     </Stack.Navigator>
   );
@@ -38,6 +41,7 @@ const CartStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="CartScreen" component={CartScreen} />
+      <Stack.Screen name="OrderScreen" component={OrderScreen} />
     </Stack.Navigator>
   );
 };
