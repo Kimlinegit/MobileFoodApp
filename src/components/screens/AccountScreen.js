@@ -1,119 +1,83 @@
-// import React, { useState } from 'react';
-// import { View, Text, TextInput, Button, Image, StyleSheet } from 'react-native';
-// import userData from '../../data/userData';
-
-// const AccountScreen = () => {
-//   // Lấy thông tin người dùng từ dữ liệu userData
-//   const user = userData.find((item) => item.id === 1); // Giả sử người dùng có id là 1
-
-//   // State để lưu trữ thông tin cá nhân và quản lý việc chỉnh sửa
-//   const [name, setName] = useState(user.name);
-//   const [password, setPassword] = useState(user.password);
-//   const [address, setAddress] = useState(user.address);
-//   const [phone, setPhone] = useState(user.phone);
-//   const [avatar, setAvatar] = useState(user.avatar);
-
-//   //xử lý khi người dùng thay đổi thông tin cá nhân
-//   const handleUpdateProfile = () => {
-//     const updatedUser = { ...user, name, password, address, phone, avatar };
-//     console.log('Updated user:', updatedUser);
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.label}>Name:</Text>
-//       <TextInput style={styles.input} value={name} onChangeText={setName} />
-
-//       <Text style={styles.label}>Password:</Text>
-//       <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
-
-//       <Text style={styles.label}>Address:</Text>
-//       <TextInput style={styles.input} value={address} onChangeText={setAddress} />
-
-//       <Text style={styles.label}>Phone:</Text>
-//       <TextInput style={styles.input} value={phone} onChangeText={setPhone} />
-
-//       <Text style={styles.label}>Avatar:</Text>
-//       <Image source={{ uri: avatar }} style={styles.avatar} />
-
-//       <Button title="Update Profile" onPress={handleUpdateProfile} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     padding: 16,
-//   },
-//   label: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     marginBottom: 8,
-//   },
-//   input: {
-//     height: 40,
-//     borderWidth: 1,
-//     borderColor: 'gray',
-//     marginBottom: 16,
-//     paddingHorizontal: 8,
-//   },
-//   avatar: {
-//     width: 100,
-//     height: 100,
-//     marginBottom: 16,
-//   },
-// });
-
-// export default AccountScreen;
-
-
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Image, StyleSheet } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
-import userData from '../../data/userData';
+import { View, Text, TextInput, Button, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import {launchImageLibraryAsync, MediaTypeOptions} from 'expo-image-picker';
+
+import { useAppContext } from '../../context/AppContext';
+import axiosInstance from '../../config/axiosConfig';
 
 const AccountScreen = () => {
-  // Lấy thông tin người dùng từ dữ liệu userData
-  const user = userData.find((item) => item.id === 1); // Giả sử người dùng có id là 1
-
-  // State để lưu trữ thông tin cá nhân và quản lý việc chỉnh sửa
-  const [name, setName] = useState(user.name);
-  const [password, setPassword] = useState(user.password);
-  const [address, setAddress] = useState(user.address);
-  const [phone, setPhone] = useState(user.phone);
-  const [avatar, setAvatar] = useState(user.avatar);
+  const {setUserInfo, userInfo} = useAppContext()
+  const [loading, setLoading] =React.useState(false)
+ const [error, setError] = useState()
+  const [name, setName] = useState(userInfo.fullname || "");
+  const [userName, setUserName] = useState(userInfo.username || "");
+  const [email, setEmail] = useState(userInfo.email || "");
+  const [password, setPassword] = useState(userInfo.password);
+  const [address, setAddress] = useState(userInfo.address|| "");
+  const [phone, setPhone] = useState(userInfo.phone_number || "");
+  const [avatar, setAvatar] = useState(userInfo.avatar_url || "");
 
   // Xử lý khi người dùng chọn ảnh từ thư viện ảnh
-  const handleChooseImage = () => {
-    const options = {
-      title: 'Select Avatar',
-      mediaType: 'photo',
-      quality: 0.7,
-    };
-
-    ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error:', response.error);
-      } else {
-        setAvatar(response.uri);
-      }
+  const handleChooseImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [0,1],
+      quality: 0,
     });
+
+    if (!result.canceled) {
+      setAvatar(result.assets[0]);
+    }
   };
 
-  // Xử lý khi người dùng thay đổi thông tin cá nhân
   const handleUpdateProfile = () => {
-    const updatedUser = { ...user, name, password, address, phone, avatar };
-    console.log('Updated user:', updatedUser);
+    setLoading(true)
+    const data = new FormData();
+    data.append('username', userName);
+    data.append('email',email);
+    data.append('fullname', name);
+    data.append('phone_number',phone);
+    data.append('address',address);
+    if(avatar!==userInfo.avatar_url && avatar ){
+      data.append('file', {
+       uri : avatar.uri,
+       type: avatar.type,
+       name: avatar.fileName? avatar.fileName: "default name"
+      });
+    }
+    axiosInstance.patch(`/user/update_info/${userInfo._id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+       }
+    }).then((res)=> {
+        setError("")
+        setUserInfo(res.data)
+    }).catch((err)=> {
+      setError("File bạn vừa upload có file size lớn hơn 1M, vui lòng upload với file size nhỏ hơn 1M")
+      setLoading(false)
+      setAvatar(userInfo.avatar_url)
+    })
   };
+  
+  React.useEffect(()=>{
+    setLoading(false)
+  }, [userInfo])
 
+  if(loading){
+    return <ActivityIndicator size="large" />
+  }
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>Email:</Text>
+      <TextInput style={styles.input} value={email} onChangeText={setEmail} />
+
       <Text style={styles.label}>Name:</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} />
+
+      <Text style={styles.label}>UserName:</Text>
+      <TextInput style={styles.input} value={userName} onChangeText={setUserName} />
 
       <Text style={styles.label}>Password:</Text>
       <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
@@ -127,13 +91,13 @@ const AccountScreen = () => {
       <Text style={styles.label}>Avatar:</Text>
       <View style={styles.avatarContainer}>
         {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.avatar} />
+          <Image source={{ uri: avatar===userInfo?.avatar_url? avatar: avatar.uri }} style={styles.avatar} />
         ) : (
           <Text>No Avatar Selected</Text>
         )}
         <Button style={styles.imgButton} title="Choose Image" onPress={handleChooseImage} />
       </View>
-
+      {error && <Text style={styles.labelError}>{error}</Text>}  
       <Button style={styles.imgButton} title="Update Profile" onPress={handleUpdateProfile} />
     </View>
   );
@@ -147,6 +111,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  labelError: {
+    fontSize: 16,
+    color: "red",
+    fontWeight: 'normal',
     marginBottom: 8,
   },
   input: {

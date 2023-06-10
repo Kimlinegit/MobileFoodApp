@@ -3,8 +3,12 @@ import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView, Fla
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axiosInstance from '../../config/axiosConfig';
+import { useAppContext } from '../../context/AppContext';
 
 const ProductDetailScreen = ({ route }) => {
+  const { userInfo} = useAppContext()
+  const isUserLogin= Boolean(userInfo?._id)
+
   const { id } = route.params;
   const navigation = useNavigation();
 
@@ -123,12 +127,14 @@ const ProductDetailScreen = ({ route }) => {
           <Text style={styles.ratingText}>rating:</Text>
           {renderRating(product.rating)}
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddToCart}>
+        {isUserLogin && <TouchableOpacity style={styles.addButton} onPress={handleAddToCart}>
           <Text style={styles.addButtonLabel}>Add to cart</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
+        </TouchableOpacity> }
+        
+        {isUserLogin && <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
           <Text style={styles.commentButtonLabel}>Comment</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> }
+        
         <Text style={styles.commentTitle}>Comments:</Text>
         {/* Hiển thị danh sách comment */}
         {/* <FlatList

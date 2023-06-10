@@ -15,6 +15,7 @@ import AuthNavigator from './AuthNavigator';
 import ProductDetailScreen from '../components/screens/ProductDetailScreen';
 import LoginScreen from '../components/screens/LoginScreen';
 import RegisterScreen from '../components/screens/RegisterScreen';
+import { AppContextProvider, useAppContext } from '../context/AppContext';
 
 
 const Tab = createBottomTabNavigator();
@@ -56,68 +57,55 @@ const NotificationStack = () => {
   );
 };
 
-
-// const AccountStack = () => {
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen name="AccountScreen" component={AccountScreen} />
-//     </Stack.Navigator>
-//   );
-// };
-
 const AccountStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen name="Account" component={AccountScreen} />
+      <Stack.Screen name="AccountScreen" component={AccountScreen} />
     </Stack.Navigator>
   );
 };
 
 const AppNavigator = () => {
+  const { userInfo} = useAppContext()
+
     const renderIcon = (focused, color, size, iconName) => {
     return <Ionicons name={iconName} size={size} color={color} />;
     };
-    const userLogedIn = true;
-
-  return (
-    <NavigationContainer>
-        {userLogedIn ? (
-            <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                let iconName;
-    
-                if (route.name === 'Home') {
-                  iconName = focused ? 'home' : 'home-outline';
-                } else if (route.name === 'Menu') {
-                  iconName = focused ? 'restaurant' : 'restaurant-outline';
-                } else if (route.name === 'Cart') {
-                  iconName = focused ? 'cart' : 'cart-outline';
-                } else if (route.name === 'Notification') {
-                  iconName = focused ? 'notifications' : 'notifications-outline';
-                } else if (route.name === 'Account') {
-                  iconName = focused ? 'person' : 'person-outline';
-                }
-    
-                return renderIcon(focused, color, size, iconName);
-              },
-            })}
-            // tabBarOptions={{
-            //   activeTintColor: 'blue',
-            //   inactiveTintColor: 'gray',
-            // }}
-          >
-            <Tab.Screen name="Home" options={{ headerShown: false }} component={HomeStack} />
-            <Tab.Screen name="Menu" options={{ headerShown: false }} component={MenuStack} />
-            <Tab.Screen name="Cart" options={{ headerShown: false }} component={CartStack} />
-            <Tab.Screen name="Notification" options={{ headerShown: false }} component={NotificationStack} />
-            <Tab.Screen name="Account" options={{ headerShown: false }} component={AccountStack} />
-          </Tab.Navigator>
-        ) : (<AuthNavigator/>)}
-    </NavigationContainer>
-  );
+    const userLogedIn = Boolean(userInfo?._id)
+    return (
+      <NavigationContainer>
+        <AppContextProvider>
+          <Tab.Navigator
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
+                  if (route.name === 'Home') {
+                    iconName = focused ? 'home' : 'home-outline';
+                  } else if (route.name === 'Menu') {
+                    iconName = focused ? 'restaurant' : 'restaurant-outline';
+                  } else if (route.name === 'Cart') {
+                    iconName = focused ? 'cart' : 'cart-outline';
+                  } else if (route.name === 'Notification') {
+                    iconName = focused ? 'notifications' : 'notifications-outline';
+                  } else if (route.name === 'Account') {
+                    iconName = focused ? 'person' : 'person-outline';
+                  }
+      
+                  return renderIcon(focused, color, size, iconName);
+                },
+              })}
+            >
+              <Tab.Screen name="Home" options={{ headerShown: false }} component={HomeStack} />
+              <Tab.Screen name="Menu" options={{ headerShown: false }} component={MenuStack} />
+              <Tab.Screen name="Cart" options={{ headerShown: false }} component={CartStack} />
+              <Tab.Screen name="Notification" options={{ headerShown: false }} component={NotificationStack} />
+              <Tab.Screen name="Account" options={{ headerShown: false }} component={AccountStack} />
+            </Tab.Navigator>
+        </AppContextProvider>
+      </NavigationContainer>
+    );
 };
 
 export default AppNavigator;

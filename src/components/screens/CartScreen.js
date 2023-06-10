@@ -3,8 +3,11 @@ import { View, Text, Image, ActivityIndicator, FlatList, StyleSheet, TouchableOp
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import axiosInstance from '../../config/axiosConfig';
 import { Feather } from '@expo/vector-icons';
+import { useAppContext } from '../../context/AppContext';
 
 const CartScreen = () => {
+  const { userInfo} = useAppContext()
+
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [dataCart, setDataCart] = React.useState();
@@ -35,6 +38,13 @@ const CartScreen = () => {
     setLoading(false);
   }, [dataCart]);
 
+  if(!Boolean(userInfo?._id)){
+    // navigation.navigate('LoginScreen');
+    return   <View style={styles.container}>
+        <Text style={styles.name}>Bạn phải đăng nhập mới vào được giỏ hàng!</Text>
+  </View>
+  }
+
   if (loading) {
     return <ActivityIndicator size="large" />;
   }
@@ -44,7 +54,6 @@ const CartScreen = () => {
   }
 
   return (
-    <ScrollView>
       <View style={styles.container}>
         <FlatList
           data={dataCart}
@@ -71,7 +80,6 @@ const CartScreen = () => {
           <Text style={styles.orderButtonLabel}>Order</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
   );
 };
 

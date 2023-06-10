@@ -1,28 +1,45 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import RegisterScreen from './RegisterScreen';
+import axiosInstance from '../../config/axiosConfig';
+import { useAppContext } from '../../context/AppContext';
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+  const {setUserInfo, userInfo} = useAppContext()
+
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    navigation.navigate('Account');
+    axiosInstance.post("/auth/login", {
+      email:email,
+      password: password
+    }).then((res)=>{
+      console.log(res.data);
+      if(res.data){
+        setUserInfo(res.data)
+        navigation.navigate('AccountScreen');
+      }
+    })
   };
 
   const handleRegister = () => {
     navigation.navigate('Register');
   };
 
+  React.useEffect(()=>{
+    if(Boolean(userInfo?._id)){
+      navigation.navigate('AccountScreen');
+    }
+  },[])
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
       />
 
       <TextInput

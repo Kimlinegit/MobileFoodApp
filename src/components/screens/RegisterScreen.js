@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axiosInstance from '../../config/axiosConfig';
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = () => {
-    // Xử lý việc đăng ký tài khoản
-    console.log('Registered:', username, password);
-
-    // Chuyển đến màn hình đăng nhập sau khi đăng ký thành công
-    navigation.navigate('Login');
+    axiosInstance.post("auth/register", {
+      username: username,
+      email: email,
+      password: password
+    }).then((res)=> {
+      if(res.data && res.data._id){
+          navigation.navigate('LoginScreen');
+      }
+    })
   };
 
 
   const handleLogin = () => {
-    navigation.navigate("Login");
+    navigation.navigate("LoginScreen");
   }
 
   return (
@@ -28,6 +34,13 @@ const RegisterScreen = () => {
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
       />
 
       <TextInput

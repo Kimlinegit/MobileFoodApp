@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import axiosInstance from '../../config/axiosConfig';
+import { useAppContext } from '../../context/AppContext';
 
 const NotificationScreen = () => {
   const isFocused = useIsFocused();
+  const {setUserInfo, userInfo} = useAppContext()
+  const navigation = useNavigation();
   // const [notificationData, setNotificationData] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -24,17 +27,19 @@ const NotificationScreen = () => {
     }
   ]
 
-
-  // React.useEffect(() => {
-  //   setLoading(true);
-  //   axiosInstance.get("/notifications").then((res) => {
-  //     setNotificationData(res.data);
-  //   });
-  // }, [isFocused]);
-
-  // React.useEffect(() => {
-  //   setLoading(false);
-  // }, [notificationData]);
+  if(!Boolean(userInfo?._id)){
+    // navigation.navigate('LoginScreen');
+    return   <View style={{flex: 1,
+      backgroundColor: '#fff'}}>
+          <Text style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 8,
+          }}>
+           Bạn phải đăng nhập mới vào được thông báo!
+           </Text>
+      </View>
+  }
 
   if (loading) {
     return <ActivityIndicator size="large" />;
