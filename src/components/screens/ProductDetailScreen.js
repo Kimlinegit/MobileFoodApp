@@ -11,11 +11,12 @@ const ProductDetailScreen = ({ route }) => {
 
   const { id } = route.params;
   const navigation = useNavigation();
-
+ 
+  //state
   const [product, setProduct] = React.useState()
   const [loading, setLoading] =React.useState(false)
+  const [isPurchased, setIsPurchased]=React.useState(false)
 
-//----------------------------------fake Data------------------------------------------
   const comments = [
     {
       content: "Hàng phê lắm Shop ơi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -29,7 +30,7 @@ const ProductDetailScreen = ({ route }) => {
     },
     
   ]
-
+  //render
   const renderRating1 = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -48,20 +49,6 @@ const ProductDetailScreen = ({ route }) => {
 
     return stars;
   };
-
-//-----------------------------------------------------------------------------------
-
-  React.useEffect(()=>{
-    setLoading(true)
-    axiosInstance.get(`product/${id}`).then((res)=>{
-      setProduct(res.data)
-    })
-  }, [])
-
-  React.useEffect(()=>{
-    if(!product) return
-    setLoading(false)
-  }, [product])
 
   const renderRating = (ratingResponse) => {
     let ratingSum= 0
@@ -89,6 +76,7 @@ const ProductDetailScreen = ({ route }) => {
     return stars;
   };
 
+  // function
   const handleAddToCart = () => {
     axiosInstance.post("cart", {
       id_user:userInfo._id,
@@ -107,6 +95,26 @@ const ProductDetailScreen = ({ route }) => {
       productPrice: product.price,
     });
   };
+
+  //useEffect
+
+  React.useEffect(()=>{
+    setLoading(true)
+    axiosInstance.get(`product/${id}`).then((res)=>{
+      setProduct(res.data)
+    })
+    axiosInstance.get(`purchase/${userInfo._id}`).then((res)=>{
+      if(res.data){
+        setIsPurchased(Boolean(res.data.some((purchase)=>Boolean(purchase.product.some((productItem)=>productItem._id===id)))))
+      }
+    })
+  }, [])
+
+  React.useEffect(()=>{
+    if(!product) return
+    setLoading(false)
+  }, [product])
+
 
   if(loading){
     return <ActivityIndicator size="large" />
@@ -131,23 +139,12 @@ const ProductDetailScreen = ({ route }) => {
           <Text style={styles.addButtonLabel}>Add to cart</Text>
         </TouchableOpacity> }
         
-        {isUserLogin && <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
+        {isUserLogin && isPurchased && <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
           <Text style={styles.commentButtonLabel}>Comment</Text>
         </TouchableOpacity> }
         
         <Text style={styles.commentTitle}>Comments:</Text>
-        {/* Hiển thị danh sách comment */}
-        {/* <FlatList
-          data={product.comments}
-          renderItem={({ item }) => (
-            <View style={styles.commentContainer}>
-              <Text style={styles.commentText}>{item.content}</Text>
-              <Text style={styles.commentAuthor}>By: {item.author}</Text>
-            </View>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.commentList}
-        /> */}
+
         <FlatList
           data={comments}
           renderItem={({ item }) => (

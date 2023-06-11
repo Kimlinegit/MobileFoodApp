@@ -1,23 +1,34 @@
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import orderData from '../../data/orderData';
 import axiosInstance from '../../config/axiosConfig';
 import { useAppContext } from '../../context/AppContext';
 import { convertVNPrice } from '../../utils/convertVNPrice';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 
 
 const OrderHistoryScreen = () => {
   const { userInfo} = useAppContext()
+  const isFocused = useIsFocused();
+
   const [data, setData] =React.useState()
+  const [loading, setLoading] = React.useState(false);
+
+
   React.useEffect(()=>{
-    if(!userInfo?._id) return
+    if (!isFocused || !userInfo?._id) return;
+    setLoading(true)
     axiosInstance.get(`purchase/${userInfo._id}`).then((res)=>{
-      console.log(res.data);
       setData(res.data)
     })
-  }, [])
+  }, [isFocused])
+
+    React.useEffect(()=>{
+      setLoading(false)
+    }, [data])
+
  const countTotalPrice =(products)=>{
    let total = 0
     products.forEach((product)=> total+= product.price)
@@ -31,6 +42,10 @@ const OrderHistoryScreen = () => {
 
   }}>Bạn phải đăng nhập mới vào được lịch sử thanh toán!</Text>
 </View>
+}
+
+if (loading) {
+  return <ActivityIndicator size="large" />;
 }
 
   return (
