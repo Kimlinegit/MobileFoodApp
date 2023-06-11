@@ -1,56 +1,58 @@
-// import React from 'react';
-// import { View, Text } from 'react-native';
-// import orderData from '../../data/orderData';
-
-// const OrderHistoryScreen = () => {
-//   return (
-//     <View>
-//       {orderData.map((order) => (
-//         <View key={order.id}>
-//           <Text>Date: {order.date}</Text>
-//           <Text>Total: ${order.total}</Text>
-//           <Text>Status: {order.status}</Text>
-//           {/* Hiển thị thông tin chi tiết về các món hàng trong đơn đặt hàng */}
-//           {order.items.map((item) => (
-//             <View key={item.id}>
-//               <Text>Name: {item.name}</Text>
-//               <Text>Price: ${item.price}</Text>
-//               <Text>Quantity: {item.quantity}</Text>
-//             </View>
-//           ))}
-//         </View>
-//       ))}
-//     </View>
-//   );
-// };
-
-// export default OrderHistoryScreen;
-
-
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import orderData from '../../data/orderData';
+import axiosInstance from '../../config/axiosConfig';
+import { useAppContext } from '../../context/AppContext';
+import { convertVNPrice } from '../../utils/convertVNPrice';
+import { ScrollView } from 'react-native-gesture-handler';
+
 
 const OrderHistoryScreen = () => {
+  const { userInfo} = useAppContext()
+  const [data, setData] =React.useState()
+  React.useEffect(()=>{
+    if(!userInfo?._id) return
+    axiosInstance.get(`purchase/${userInfo._id}`).then((res)=>{
+      console.log(res.data);
+      setData(res.data)
+    })
+  }, [])
+ const countTotalPrice =(products)=>{
+   let total = 0
+    products.forEach((product)=> total+= product.price)
+  return total
+ }
+
+ if(!Boolean(userInfo?._id)) {
+  return <View style={{ flex: 1,  padding: 16,}}>
+  <Text style={{ fontSize: 16, 
+  fontWeight: "bold",
+
+  }}>Bạn phải đăng nhập mới vào được lịch sử thanh toán!</Text>
+</View>
+}
+
   return (
-    <View style={styles.container}>
-      {orderData.map((order) => (
-        <View key={order.id} style={styles.orderContainer}>
-          <Text style={styles.date}>Date: {order.date}</Text>
-          <Text style={styles.total}>Total: ${order.total}</Text>
-          <Text style={styles.status}>Status: {order.status}</Text>
-          {/* Hiển thị thông tin chi tiết về các món hàng trong đơn đặt hàng */}
-          {order.items.map((item) => (
-            <View key={item.id} style={styles.itemContainer}>
-              <Text style={styles.name}>Name: {item.name}</Text>
-              <Text style={styles.price}>Price: ${item.price}</Text>
-              <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
+    <ScrollView>
+      <View style={styles.container}>
+          {data && data?.map((order) => (
+            <View key={order.id} style={styles.orderContainer}>
+              <Text style={styles.date}>Date: {order.createdAt.split("T")[0]}</Text>
+              <Text style={styles.total}>Total: {convertVNPrice(countTotalPrice(order.product))}</Text>
+              <Text style={styles.status}>Status: {order.status}</Text>
+              {order.product_info.map((item) => (
+                <View key={item._id} style={styles.itemContainer}>
+                  <Text style={styles.name}>Name: {item.name}</Text>
+                  <Text style={styles.price}>Price: {convertVNPrice(item.price)}</Text>
+                  <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
+                </View>
+              ))}
             </View>
           ))}
         </View>
-      ))}
-    </View>
+    </ScrollView>
+  
   );
 };
 

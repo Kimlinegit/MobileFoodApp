@@ -10,49 +10,6 @@ const ProductCard = ({ product }) => {
       navigation.navigate('ProductDetailScreen', { id: product._id });
     };
 
-  //   const renderRatingStars = () => {
-  //   // const rating = product.rating;
-  //   const rating = 1
-  //   const fullStars = Math.floor(rating);
-  //   const halfStars = rating % 1 !== 0 ? 1 : 0;
-  //   const emptyStars = 5 - fullStars - halfStars;
-
-  //   return (
-  //     <>
-  //       {Array(fullStars)
-  //         .fill()
-  //         .map((_, index) => (
-  //           <Ionicons
-  //             key={`full-star-${index}`}
-  //             name="star"
-  //             size={16}
-  //             color="gold"
-  //           />
-  //         ))}
-  //       {Array(halfStars)
-  //         .fill()
-  //         .map((_, index) => (
-  //           <Ionicons
-  //             key={`half-star-${index}`}
-  //             name="star-half"
-  //             size={16}
-  //             color="gold"
-  //           />
-  //         ))}
-  //       {Array(emptyStars)
-  //         .fill()
-  //         .map((_, index) => (
-  //           <Ionicons
-  //             key={`empty-star-${index}`}
-  //             name="star-outline"
-  //             size={16}
-  //             color="gold"
-  //           />
-  //         ))}
-  //     </>
-  //   );
-  // };
-
   const renderRating = (ratingResponse) => {
     let ratingSum= 0
     ratingResponse.forEach((ratingItem)=> {

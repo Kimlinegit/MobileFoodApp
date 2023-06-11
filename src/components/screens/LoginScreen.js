@@ -14,7 +14,6 @@ const LoginScreen = ({ navigation }) => {
       email:email,
       password: password
     }).then((res)=>{
-      console.log(res.data);
       if(res.data){
         setUserInfo(res.data)
         navigation.navigate('AccountScreen');
@@ -26,11 +25,9 @@ const LoginScreen = ({ navigation }) => {
     navigation.navigate('Register');
   };
 
-  React.useEffect(()=>{
-    if(Boolean(userInfo?._id)){
-      navigation.navigate('AccountScreen');
-    }
-  },[])
+  if(Boolean(userInfo?._id)){
+    navigation.navigate('AccountScreen');
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>

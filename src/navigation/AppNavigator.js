@@ -57,6 +57,14 @@ const NotificationStack = () => {
   );
 };
 
+const OrderHistoryStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="OrderHistoryScreen" component={OrderHistoryScreen} />
+    </Stack.Navigator>
+  );
+};
+
 const AccountStack = () => {
   return (
     <Stack.Navigator>
@@ -87,7 +95,7 @@ const AppNavigator = () => {
                     iconName = focused ? 'restaurant' : 'restaurant-outline';
                   } else if (route.name === 'Cart') {
                     iconName = focused ? 'cart' : 'cart-outline';
-                  } else if (route.name === 'Notification') {
+                  } else if (route.name === 'OrderHistory') {
                     iconName = focused ? 'notifications' : 'notifications-outline';
                   } else if (route.name === 'Account') {
                     iconName = focused ? 'person' : 'person-outline';
@@ -100,7 +108,8 @@ const AppNavigator = () => {
               <Tab.Screen name="Home" options={{ headerShown: false }} component={HomeStack} />
               <Tab.Screen name="Menu" options={{ headerShown: false }} component={MenuStack} />
               <Tab.Screen name="Cart" options={{ headerShown: false }} component={CartStack} />
-              <Tab.Screen name="Notification" options={{ headerShown: false }} component={NotificationStack} />
+              {/* <Tab.Screen name="Notification" options={{ headerShown: false }} component={NotificationStack} /> */}
+              <Tab.Screen name="OrderHistory" options={{ headerShown: false }} component={OrderHistoryStack} />
               <Tab.Screen name="Account" options={{ headerShown: false }} component={AccountStack} />
             </Tab.Navigator>
         </AppContextProvider>

@@ -14,7 +14,11 @@ const CartScreen = () => {
   const [loading, setLoading] = React.useState(false);
 
   const handleOrder = (dataCart) => {
-    // Xử lý chuyển sang payment
+    // axiosInstance.post("purchase", {
+    //   id_user: userInfo._id
+    // }).then((res)=>{
+    //   console.log(res.data);
+    // })
     navigation.navigate('OrderScreen');
   };
 
@@ -23,12 +27,11 @@ const CartScreen = () => {
   };
 
   //* Lưu ý là sau khi user login xong thì mới có id user nhé!
-  const idUser = "6471dc1b2297c72f1b4a156c";
-
+  // const idUser = "6471dc1b2297c72f1b4a156c";
   React.useEffect(() => {
-    if (!isFocused) return;
+    if (!isFocused || !userInfo?._id) return;
     setLoading(true);
-    axiosInstance.get(`cart/${idUser}`).then((res) => {
+    axiosInstance.get(`cart/${userInfo._id}`).then((res) => {
       setDataCart(res.data);
     });
   }, [isFocused]);
@@ -40,9 +43,9 @@ const CartScreen = () => {
 
   if(!Boolean(userInfo?._id)){
     // navigation.navigate('LoginScreen');
-    return   <View style={styles.container}>
-        <Text style={styles.name}>Bạn phải đăng nhập mới vào được giỏ hàng!</Text>
-  </View>
+    return  <View style={styles.container}>
+              <Text style={styles.name}>Bạn phải đăng nhập mới vào được giỏ hàng!</Text>
+            </View>
   }
 
   if (loading) {
@@ -55,6 +58,8 @@ const CartScreen = () => {
 
   return (
       <View style={styles.container}>
+         {(!dataCart || dataCart.length===0) && <Text  style={styles.name}>Không có sản phẩm nào được thêm vào giỏ hàng</Text>}
+
         <FlatList
           data={dataCart}
           renderItem={({ item }) => {
@@ -64,10 +69,12 @@ const CartScreen = () => {
                   <Feather name="trash-2" size={20} color="red" />
                 </TouchableOpacity>
                 <Text style={styles.name}>{item.product.name}</Text>
-                <Image
-                  source={{ uri: item.product.image_url }}
-                  style={styles.image}
-                />
+                <TouchableOpacity onPress={()=>navigation.navigate('ProductDetailScreen', { id: item.product._id })}>
+                  <Image
+                    source={{ uri: item.product.image_url }}
+                    style={styles.image}
+                  />
+                </TouchableOpacity>
                 <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
                 <Text style={styles.date}>Ngày thêm vào giỏ hàng: {item.createdAt.split("T")[0]}</Text>
               </View>
@@ -76,9 +83,10 @@ const CartScreen = () => {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.cartList}
         />
-        <TouchableOpacity style={styles.orderButton} onPress={handleOrder }>
-          <Text style={styles.orderButtonLabel}>Order</Text>
-        </TouchableOpacity>
+       
+        {dataCart?.length>0 &&  <TouchableOpacity style={styles.orderButton} onPress={handleOrder }>
+            <Text style={styles.orderButtonLabel}>Order</Text>
+          </TouchableOpacity>}
       </View>
   );
 };

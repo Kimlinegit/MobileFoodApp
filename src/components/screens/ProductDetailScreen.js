@@ -91,7 +91,7 @@ const ProductDetailScreen = ({ route }) => {
 
   const handleAddToCart = () => {
     axiosInstance.post("cart", {
-      id_user:"6471dc1b2297c72f1b4a156c",
+      id_user:userInfo._id,
       id_product:product._id
     }).then((res)=>{
       console.log(res.data);

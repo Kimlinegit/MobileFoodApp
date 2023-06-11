@@ -1,18 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import axiosInstance from '../../config/axiosConfig';
+import { useAppContext } from '../../context/AppContext';
 
 const OrderScreen = () => {
+  const { userInfo} = useAppContext()
   const navigation = useNavigation();
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState(userInfo?.address || "");
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [error, setError] = React.useState(false)
 
   const handlePlaceOrder = () => {
-    // Xử lý đặt hàng và thanh toán ở đây
-    navigation.navigate("OrderHistoryScreen")
+    if(!address || !cardNumber || !expiryDate || !cvv) {
+      setError(true)
+      return 
+    }
+    axiosInstance.post("purchase", {
+      id_user: userInfo._id,
+      shipping_address: address,
+      credit_card_number: cardNumber,
+      expired_date: expiryDate,
+      cvv: cvv
+    }).then((res)=> {
+      if(res.data){
+        setError(false)
+        navigation.navigate("OrderHistoryScreen")
+      }
+    })
   };
+ 
 
   return (
     <View style={styles.container}>
@@ -55,6 +74,12 @@ const OrderScreen = () => {
           />
         </View>
       </View>
+      {error && <Text style={{
+        color:"red",
+        marginBottom: 8,
+        fontSize: 16
+      }}>Vui lòng nhập đầy đủ các thông tin</Text>}
+      
 
       <TouchableOpacity style={styles.button} onPress={handlePlaceOrder}>
         <Text style={styles.buttonLabel}>Place Order</Text>
