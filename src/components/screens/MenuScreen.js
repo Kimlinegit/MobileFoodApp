@@ -16,7 +16,16 @@ const MenuScreen = () => {
   };
 
   const handleSearch = () => {
-    // Xử lý tìm kiếm với searchText
+    setLoading(true);
+    if(!searchText) {
+      axiosInstance.get("/product").then((res) => {
+        setMenuData(res.data);
+      });
+      return
+    }
+    axiosInstance.get(`product/search/${searchText}`).then((res)=>{
+      setMenuData(res.data);
+    })
   };
 
   React.useEffect(() => {
