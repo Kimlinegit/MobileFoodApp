@@ -13,27 +13,24 @@ const CartScreen = () => {
   const [dataCart, setDataCart] = React.useState();
   const [loading, setLoading] = React.useState(false);
 
-  const handleOrder = (dataCart) => {
-    // axiosInstance.post("purchase", {
-    //   id_user: userInfo._id
-    // }).then((res)=>{
-    //   console.log(res.data);
-    // })
+  const handleOrder = () => {
     navigation.navigate('OrderScreen');
   };
 
   const handleDelete = (itemId) => {
-    // Xử lý xóa sản phẩm với itemId
+    axiosInstance.delete(`cart/${itemId}`).then((res)=>handleGetCart())
+    
   };
-
-  //* Lưu ý là sau khi user login xong thì mới có id user nhé!
-  // const idUser = "6471dc1b2297c72f1b4a156c";
-  React.useEffect(() => {
-    if (!isFocused || !userInfo?._id) return;
+  const handleGetCart = ()=>{
     setLoading(true);
     axiosInstance.get(`cart/${userInfo._id}`).then((res) => {
       setDataCart(res.data);
     });
+  }
+
+  React.useEffect(() => {
+    if (!isFocused || !userInfo?._id) return;
+    handleGetCart()
   }, [isFocused]);
 
   React.useEffect(() => {
@@ -42,7 +39,6 @@ const CartScreen = () => {
   }, [dataCart]);
 
   if(!Boolean(userInfo?._id)){
-    // navigation.navigate('LoginScreen');
     return  <View style={styles.container}>
               <Text style={styles.name}>Bạn phải đăng nhập mới vào được giỏ hàng!</Text>
             </View>
@@ -55,7 +51,7 @@ const CartScreen = () => {
   if (!dataCart) {
     return null;
   }
-
+console.log({dataCart});
   return (
       <View style={styles.container}>
          {(!dataCart || dataCart.length===0) && <Text  style={styles.name}>Không có sản phẩm nào được thêm vào giỏ hàng</Text>}
@@ -65,7 +61,7 @@ const CartScreen = () => {
           renderItem={({ item }) => {
             return (
               <View style={styles.cartItem}>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
                   <Feather name="trash-2" size={20} color="red" />
                 </TouchableOpacity>
                 <Text style={styles.name}>{item.product.name}</Text>

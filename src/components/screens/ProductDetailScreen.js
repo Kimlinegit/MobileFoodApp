@@ -1,35 +1,23 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView, FlatList } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView, FlatList, ToastAndroid } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import axiosInstance from '../../config/axiosConfig';
 import { useAppContext } from '../../context/AppContext';
 
 const ProductDetailScreen = ({ route }) => {
   const { userInfo} = useAppContext()
   const isUserLogin= Boolean(userInfo?._id)
+  const isFocused = useIsFocused();
 
   const { id } = route.params;
   const navigation = useNavigation();
- 
   //state
   const [product, setProduct] = React.useState()
   const [loading, setLoading] =React.useState(false)
   const [isPurchased, setIsPurchased]=React.useState(false)
+  const [listComments, setListComment]= React.useState()
 
-  const comments = [
-    {
-      content: "Hàng phê lắm Shop ơi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      rating: 5,
-      author: "Nguyễn Quốc Dũng"
-    },
-    {
-      content: "Hàng ngon lắm Shop ơi",
-      rating: 4.5,
-      author: "Huỳnh Tuấn Anh"
-    },
-    
-  ]
   //render
   const renderRating1 = (rating) => {
     const stars = [];
@@ -97,18 +85,20 @@ const ProductDetailScreen = ({ route }) => {
   };
 
   //useEffect
-
   React.useEffect(()=>{
+    if(!isFocused) return 
     setLoading(true)
     axiosInstance.get(`product/${id}`).then((res)=>{
       setProduct(res.data)
+      setListComment(res.data?.rating)
     })
+    if(!userInfo) return
     axiosInstance.get(`purchase/${userInfo._id}`).then((res)=>{
       if(res.data){
         setIsPurchased(Boolean(res.data.some((purchase)=>Boolean(purchase.product.some((productItem)=>productItem._id===id)))))
       }
     })
-  }, [])
+  }, [isFocused])
 
   React.useEffect(()=>{
     if(!product) return
@@ -120,7 +110,6 @@ const ProductDetailScreen = ({ route }) => {
     return <ActivityIndicator size="large" />
   }
   if(!product) return <View></View>
-  
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -144,22 +133,22 @@ const ProductDetailScreen = ({ route }) => {
         </TouchableOpacity> }
         
         <Text style={styles.commentTitle}>Comments:</Text>
-
-        <FlatList
-          data={comments}
+        { listComments &&  <FlatList
+          data={listComments}
           renderItem={({ item }) => (
-            <View style={styles.commentContainer}>
-              <Text style={styles.commentText}>{item.content}</Text>
+            <View key={item._id} style={styles.commentContainer}>
+              <Text style={styles.commentText}>{item?.comment}</Text>
               <View style={styles.ratingContainer}>
                 <Text style={styles.ratingText}>Rating:</Text>
                 {renderRating1(item.rating)}
               </View>
-              <Text style={styles.commentAuthor}>By: {item.author}</Text>
+              <Text style={styles.commentAuthor}>By: {item.user.email}</Text>
             </View>
           )}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.commentList}
-        />
+        />}
+       
       </View>
     </ScrollView>
   );

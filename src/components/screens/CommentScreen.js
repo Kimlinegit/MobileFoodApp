@@ -2,28 +2,28 @@ import React from 'react';
 import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Rating, Input } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
+import axiosInstance from '../../config/axiosConfig';
+import { useAppContext } from '../../context/AppContext';
 
 const CommentScreen = ({ route }) => {
+  const { userInfo} = useAppContext()
+
   const { productId, productName, productImage, productPrice } = route.params;
   const navigation = useNavigation();
 
   const [rating, setRating] = React.useState(4);
   const [comment, setComment] = React.useState('');
-
-  const handleRatingChange = (value) => {
-    setRating(value);
-  };
-
-  const handleCommentChange = (text) => {
-    setComment(text);
-  };
-
   const handleCommentSubmit = () => {
-    // Gửi đánh giá và comment lên server
-    // ...
-
-    // Điều hướng quay trở lại trang ProductDetailScreen
-    navigation.navigate('ProductDetailScreen', { productId });
+    axiosInstance.post("rating", {
+      id_user: userInfo._id,
+      id_product: productId,
+      rating: rating,
+      comment: comment
+    }).then((res)=>{
+      if(res.data){
+        navigation.navigate('ProductDetailScreen', {id: productId });
+      }
+    })
   };
 
   return (
@@ -35,12 +35,12 @@ const CommentScreen = ({ route }) => {
         showRating
         fractions={1}
         startingValue={rating}
-        onFinishRating={handleRatingChange}
+        onFinishRating={(value)=> setRating(value)}
         style={styles.rating}
       />
       <Input
         placeholder="Write a comment"
-        onChangeText={handleCommentChange}
+        onChangeText={(text)=> setComment(text)}
         value={comment}
         containerStyle={styles.commentInputContainer}
         inputStyle={styles.commentInput}
