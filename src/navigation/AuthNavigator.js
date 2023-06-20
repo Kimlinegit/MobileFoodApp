@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from '../components/screens/HomeScreen';
 import CartScreen from '../components/screens/CartScreen';
 import NotificationScreen from '../components/screens/NotificationScreen';
 import { Menu } from '@material-ui/core';
+import HomeScreen from '../components/screens/home_screen/HomeScreen';
 
 const Stack = createStackNavigator();
 

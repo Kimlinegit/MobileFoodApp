@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-import HomeScreen from '../components/screens/HomeScreen';
 import MenuScreen from '../components/screens/MenuScreen';
 import CartScreen from '../components/screens/CartScreen';
 import OrderScreen from '../components/screens/OrderScreen';
@@ -16,6 +15,7 @@ import ProductDetailScreen from '../components/screens/ProductDetailScreen';
 import LoginScreen from '../components/screens/LoginScreen';
 import RegisterScreen from '../components/screens/RegisterScreen';
 import { AppContextProvider, useAppContext } from '../context/AppContext';
+import HomeScreen from '../components/screens/home_screen/HomeScreen';
 
 
 const Tab = createBottomTabNavigator();
